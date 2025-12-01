@@ -1,27 +1,14 @@
 FROM n8nio/n8n:latest
 
-# Make sure .n8n folder exists
+# Ensure .n8n directory exists with correct permissions
 USER root
 RUN mkdir -p /home/node/.n8n && chown -R node:node /home/node
 
-# Switch user
 USER node
 
-# ENV for Render
-ENV N8N_BASIC_AUTH_ACTIVE=true
-ENV N8N_HOST=0.0.0.0
-ENV N8N_PORT=5678
-ENV N8N_PROTOCOL=https
-
-# Webhook URL for Render
-ENV WEBHOOK_URL=https://n8n-on-render-l85e.onrender.com/
-
-# Use Neon database
-ENV DB_TYPE=postgresdb
-
-# Port
+# Expose internal n8n port (Render replaces this with $PORT automatically)
 EXPOSE 5678
 
-# Start n8n
+# Run n8n dynamically using Render PORT
 ENTRYPOINT ["tini", "--"]
-CMD ["n8n"]
+CMD ["n8n", "start", "--host=0.0.0.0", "--port=$PORT"]
